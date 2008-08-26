@@ -103,7 +103,8 @@ class ContentManager(webapp.RequestHandler):
       edited_page.put()
       self.response.headers['Content-Type'] = 'text/html'
       self.response.out.write(
-          'Done, view your <a href="%s">updated content</a>' % resource_path)
+          'Done, view your updated content at it\'s URL: '
+          '<a href="%s">%s</a>' % (resource_path, resource_path))
     else:
       self.response.out.write('bad path')
       
