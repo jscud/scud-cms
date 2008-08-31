@@ -32,24 +32,54 @@ class Page(db.Model):
 
 
 def load_with_cache(request_path):
-  pass
+  """Loads the desired URL from cache, or from the datastore if not in cache.
+  
+  Args:
+    request_path: str The URL under this domain where the content should live. 
+  
+  Returns:
+    A tuple of strings containing 
+    (content, mime_type, last_updated, cache_settings) or, None if the desired
+    URL does not have an entry in the datastore.
+  """
+  page = memcache.get(request_path)
+  if not page:
+    page = Page.get_by_key_name(request_path)
+    if page:
+      return (page.content, page.mime_type, page.last_updated, 
+              page.cache_settings)
+  return page
 
 
-def store_and_cache(request_path, values):
-  pass
+def store_and_cache(resource_path, page_parts):
+  """Sets the URL to the desired values and stores in both cache and datastore.
+  
+  Args:
+    resource_path: str The URL under this domain where the content should live.
+    page_parts: tuple of strings which contains 
+        (content, mime_type, last_updated, cache_settings)
+  """
+  memcache.set(resource_path, page_parts)
+  page = Page.get_by_key_name(resource_path)
+  if not page:
+    page = Page.get_or_insert(resource_path)
+  page.content = page_parts[0]
+  page.mime_type = page_parts[1]
+  page.last_updated = page_parts[2]
+  page.cache_settings = page_parts[3]
+  page.put()
 
 
 class MainPage(webapp.RequestHandler):
   def get(self):
-    path = self.request.path
-    page = Page.get_by_key_name(path)
-    if page:
-      self.response.headers['Content-Type'] = page.mime_type or 'text/html'
-      if page.last_updated:
-        self.response.headers['Last-Modified'] = page.last_updated
-      if page.cache_settings:
-        self.response.headers['Cache-Control'] = page.cache_settings
-      self.response.out.write(page.content)
+    page_parts = load_with_cache(self.request.path)
+    if page_parts:
+      self.response.headers['Content-Type'] = page_parts[1] or 'text/html'
+      if page_parts[2]:
+        self.response.headers['Last-Modified'] = page_parts[2]
+      if page_parts[3]:
+        self.response.headers['Cache-Control'] = page_parts[3]
+      self.response.out.write(page_parts[0])
     else:
       self.error(404)
       self.response.out.write('not found')
@@ -61,16 +91,16 @@ class ContentManager(webapp.RequestHandler):
     path = ''
     content = ''
     mime_type = 'text/html'
-    updated = 'Mon, 25 Aug 2008 19:32:55 GMT'
+    updated = 'Sat, 30 Aug 2008 17:32:55 GMT'
     cache = 'max-age=3600, must-revalidate'
     if resource_path:
-      page = Page.get_by_key_name(resource_path)
-      if page:
+      page_parts = load_with_cache(resource_path)
+      if page_parts:
         path = resource_path
-        content = page.content
-        mime_type = page.mime_type
-        updated = page.last_updated
-        cache = page.cache_settings
+        content = page_parts[0]
+        mime_type = page_parts[1]
+        updated = page_parts[2]
+        cache = page_parts[3]
     self.response.out.write('<html><body>'
         '<form action="/content_manager" method="post">'
           '<table><tr><td>'
@@ -92,15 +122,9 @@ class ContentManager(webapp.RequestHandler):
   def post(self):
     resource_path = self.request.get('path')
     if resource_path:
-      edited_page = Page.get_or_insert(resource_path)
-      edited_page.content = self.request.get('content')
-      if self.request.get('type'):
-        edited_page.mime_type = self.request.get('type')
-      if self.request.get('updated'):
-        edited_page.last_updated = self.request.get('updated')
-      if self.request.get('cache'):
-        edited_page.cache_settings = self.request.get('cache')
-      edited_page.put()
+      page_parts = (self.request.get('content'), self.request.get('type'),
+                    self.request.get('updated'), self.request.get('cache'))
+      store_and_cache(resource_path, page_parts)
       self.response.headers['Content-Type'] = 'text/html'
       self.response.out.write(
           'Done, view your updated content at it\'s URL: '
