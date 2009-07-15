@@ -152,7 +152,8 @@ class ContentLister(webapp.RequestHandler):
     count = len(page_keys)
     for i in xrange(count):
       if i < self.FETCH_LIMIT:
-        self.response.out.write('page name %s <br/>' % page_keys[i].name())
+        self.response.out.write('Edit <a href="/content_manager%s">%s</a><br/>' % (
+            urllib.quote(page_keys[i].name()), urllib.quote(page_keys[i].name())))
 
     if count > self.FETCH_LIMIT:
       self.response.out.write('<a href="/content_lister?next=%s">Next</a>' % (
