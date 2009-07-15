@@ -134,26 +134,29 @@ class ContentManager(webapp.RequestHandler):
 
 
 class ContentLister(webapp.RequestHandler):
-  FETCH_LIMIT = 3
+  FETCH_LIMIT = 30
 
   def get(self):
     next = self.request.get('next')
     if next:
-      pages = Page.gql(
-          'WHERE __key__ >= :key ORDER BY __key__ ASC',
+      page_keys = db.GqlQuery(
+          'SELECT __key__ from Page WHERE __key__ >= :key'
+          ' ORDER BY __key__ ASC',
           key=db.Key.from_path('Page', next)).fetch(self.FETCH_LIMIT + 1)
 
     else:
-      pages = Page.gql('ORDER BY __key__ ASC').fetch(self.FETCH_LIMIT + 1)
+      page_keys = db.GqlQuery(
+          'SELECT __key__ from Page ORDER BY __key__ ASC').fetch(
+              self.FETCH_LIMIT + 1)
 
-    count = len(pages)
+    count = len(page_keys)
     for i in xrange(count):
       if i < self.FETCH_LIMIT:
-        self.response.out.write('page name %s <br/>' % pages[i].key().name())
+        self.response.out.write('page name %s <br/>' % page_keys[i].name())
 
     if count > self.FETCH_LIMIT:
       self.response.out.write('<a href="/content_lister?next=%s">Next</a>' % (
-          urllib.quote(pages[self.FETCH_LIMIT].key().name())))
+          urllib.quote(page_keys[self.FETCH_LIMIT].name())))
       
     
 application = webapp.WSGIApplication([('/content_manager.*', ContentManager),
