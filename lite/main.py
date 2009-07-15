@@ -14,6 +14,7 @@
 
 
 import os
+import urllib
 from google.appengine.ext import webapp
 from google.appengine.ext.webapp.util import run_wsgi_app
 from google.appengine.ext import db
@@ -130,9 +131,33 @@ class ContentManager(webapp.RequestHandler):
           '<a href="%s">%s</a>' % (resource_path, resource_path))
     else:
       self.response.out.write('bad path')
+
+
+class ContentLister(webapp.RequestHandler):
+  FETCH_LIMIT = 3
+
+  def get(self):
+    next = self.request.get('next')
+    if next:
+      pages = Page.gql(
+          'WHERE __key__ >= :key ORDER BY __key__ ASC',
+          key=db.Key.from_path('Page', next)).fetch(self.FETCH_LIMIT + 1)
+
+    else:
+      pages = Page.gql('ORDER BY __key__ ASC').fetch(self.FETCH_LIMIT + 1)
+
+    count = len(pages)
+    for i in xrange(count):
+      if i < self.FETCH_LIMIT:
+        self.response.out.write('page name %s <br/>' % pages[i].key().name())
+
+    if count > self.FETCH_LIMIT:
+      self.response.out.write('<a href="/content_lister?next=%s">Next</a>' % (
+          urllib.quote(pages[self.FETCH_LIMIT].key().name())))
       
     
 application = webapp.WSGIApplication([('/content_manager.*', ContentManager),
+                                      ('/content_lister.*', ContentLister), 
                                       ('/.*', MainPage)],
                                      debug=True)
 

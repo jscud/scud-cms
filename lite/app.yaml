@@ -7,6 +7,10 @@ handlers:
 - url: /content_manager.*
   script: main.py
   login: admin
+
+- url: /content_lister.*
+  script: main.py
+  login: admin
   
 - url: /.*
   script: main.py
