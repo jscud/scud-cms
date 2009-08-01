@@ -32,19 +32,19 @@ The request method will return a Response object which contains the data
 returned by the server. 
 
 Some App Engine apps chose to use the Users API and the Client class provides
-a google_login method to allow you to obtain an app-specific cookie which is
-used by the Users API. 
+a ae_google_login method to allow you to obtain an app-specific cookie which
+is used by the Users API. 
 
 I've posted a simple Users API demo here:
 http://jscudtest.appspot.com/user
 Try the above in your web browser.
 
 To allow the Users API to recognize the request from this command line client,
-use google_login as follows:
+use ae_google_login as follows:
 
 import http
 client = http.Client()
-client.google_login('jscudtest') # Change to appID that you are signing in to.
+client.ae_google_login('jscudtest') # Change to the appID you are signing in to.
 resp = client.request('GET', 'http://jscudtest.appspot.com/user')
 print resp.body
 
@@ -56,7 +56,7 @@ http://shoutout.appspot.com/
 To post on the shotouts page using this command line client, use:
 import http
 client = http.Client()
-client.google_login('shoutout')
+client.ae_google_login('shoutout')
 client.request('POST', 'http://shoutout.appspot.com/',
     form_data={'who': raw_input('From: '),
                'message': raw_input('Message: ')})
@@ -236,7 +236,7 @@ class Client(object):
 
     return response
 
-  def google_login(self, app_id):
+  def ae_google_login(self, app_id):
     """Used to set the cookie for App Engine's Users API."""
     # Two steps:
     # 1. Get Client Login token
@@ -244,7 +244,7 @@ class Client(object):
     # Turn off request printing since the password would be shown on the
     # terminal.
     starting_print_taffic_setting = self.print_traffic
-    #self.print_traffic = False
+    self.print_traffic = False
     # Step 1, get the client login token using the username and password.
     email = raw_input('Please enter your gmail account: ')
     password = getpass.getpass()
