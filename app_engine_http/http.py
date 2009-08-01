@@ -32,7 +32,7 @@ The request method will return a Response object which contains the data
 returned by the server. 
 
 Some App Engine apps chose to use the Users API and the Client class provides
-a ae_google_login method to allow you to obtain an app-specific cookie which
+a appengine_login method to allow you to obtain an app-specific cookie which
 is used by the Users API. 
 
 I've posted a simple Users API demo here:
@@ -40,11 +40,11 @@ http://jscudtest.appspot.com/user
 Try the above in your web browser.
 
 To allow the Users API to recognize the request from this command line client,
-use ae_google_login as follows:
+use appengine_login as follows:
 
 import http
 client = http.Client()
-client.ae_google_login('jscudtest') # Change to the appID you are signing in to.
+client.appengine_login('jscudtest') # Change to the appID you are signing in to.
 resp = client.request('GET', 'http://jscudtest.appspot.com/user')
 print resp.body
 
@@ -56,7 +56,7 @@ http://shoutout.appspot.com/
 To post on the shotouts page using this command line client, use:
 import http
 client = http.Client()
-client.ae_google_login('shoutout')
+client.appengine_login('shoutout')
 client.request('POST', 'http://shoutout.appspot.com/',
     form_data={'who': raw_input('From: '),
                'message': raw_input('Message: ')})
@@ -236,7 +236,7 @@ class Client(object):
 
     return response
 
-  def ae_google_login(self, app_id):
+  def appengine_login(self, app_id):
     """Used to set the cookie for App Engine's Users API."""
     # Two steps:
     # 1. Get Client Login token

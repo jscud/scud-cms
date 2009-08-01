@@ -38,7 +38,7 @@ class ClientTest(unittest.TestCase):
 
   def test_client_login(self):
     client = http.Client()
-    client.ae_google_login('jscudtest')
+    client.appengine_login('jscudtest')
     # Change print_traffic to True to debug and show the request and
     # response.
     client.print_traffic = False
