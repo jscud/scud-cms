@@ -17,7 +17,8 @@ class ContentJsonManager(webapp2.RequestHandler):
         self.response.write(json.dumps({'exmaple': 'value'}))
 
     def post(self):
-        pass
+        self.response.headers['Content-Type'] = 'application/json'
+        self.response.write(self.request.body)
 
 
 class MainPage(webapp2.RequestHandler):

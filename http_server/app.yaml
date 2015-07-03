@@ -8,6 +8,9 @@ handlers:
   static_files: content_manager.js
   upload: content_manager.js
 
+- url: /content_manager_json.*
+  script: http_server.app
+
 - url: /content_manager.*
   static_files: content_manager.html
   upload: content_manager.html
