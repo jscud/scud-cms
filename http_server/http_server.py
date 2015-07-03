@@ -18,7 +18,8 @@ class ContentJsonManager(webapp2.RequestHandler):
 
     def post(self):
         pass
-      
+
+
 class MainPage(webapp2.RequestHandler):
     def get(self):
         self.response.headers['Content-Type'] = 'text/plain'
@@ -26,5 +27,5 @@ class MainPage(webapp2.RequestHandler):
 
 app = webapp2.WSGIApplication([
     ('/content_manager_json', ContentJsonManager),
-    ('/', MainPage),
+    ('/.*', MainPage),
 ], debug=True)

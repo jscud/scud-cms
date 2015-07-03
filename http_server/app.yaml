@@ -1,8 +1,16 @@
 version: 1
 runtime: python27
 api_version: 1
-threadsafe: true
+threadsafe: no
 
 handlers:
+- url: /content_manager.js
+  static_files: content_manager.js
+  upload: content_manager.js
+
+- url: /content_manager.*
+  static_files: content_manager.html
+  upload: content_manager.html
+
 - url: /.*
   script: http_server.app
