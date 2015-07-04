@@ -26,7 +26,8 @@ class ContentJsonManager(webapp2.RequestHandler):
     def get(self):
         resource = self.find_resource()
         resource_data = {
-            'content': resource.content
+            'content': resource.content,
+            'ctype': resource.content_type,
         }
         self.response.headers['Content-Type'] = 'application/json'
         self.response.write(json.dumps(resource_data))
@@ -39,6 +40,7 @@ class ContentJsonManager(webapp2.RequestHandler):
         resource.path = self.request.path[21:]
         resource_data = json.loads(self.request.body)
         resource.content = resource_data['content']
+        resource.content_type = resource_data['ctype']
         resource.put()
 
         self.response.headers['Content-Type'] = 'application/json'

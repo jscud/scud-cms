@@ -27,7 +27,8 @@ function saveResource() {
   var path = document.getElementById('path').value;
 
   var payload = {
-    content: document.getElementById('content').value
+    content: document.getElementById('content').value,
+    ctype: document.getElementById('content-type').value
   };
 
   httpRequest('POST', JSON.stringify(payload), '/content_manager_json' + path,
