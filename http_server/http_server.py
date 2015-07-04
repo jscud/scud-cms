@@ -17,8 +17,12 @@ class ContentJsonManager(webapp2.RequestHandler):
         self.response.write(json.dumps({'exmaple': 'value'}))
 
     def post(self):
+        resource = Resource()
+        # Strip the leading /content_manger_json from the path to get the path
+        # of the resource being saved.
+        resource.path = self.request.path[21:]
         self.response.headers['Content-Type'] = 'application/json'
-        self.response.write(self.request.body)
+        self.response.write('creating resource %s' % resource.path);
 
 
 class MainPage(webapp2.RequestHandler):
@@ -27,6 +31,6 @@ class MainPage(webapp2.RequestHandler):
         self.response.write('Hello, HTTP')
 
 app = webapp2.WSGIApplication([
-    ('/content_manager_json', ContentJsonManager),
+    ('/content_manager_json.*', ContentJsonManager),
     ('/.*', MainPage),
 ], debug=True)

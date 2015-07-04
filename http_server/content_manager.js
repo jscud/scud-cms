@@ -23,3 +23,10 @@ function httpRequest(httpVerb, data, url, headers, handler) {
   }
 }
 
+function saveResource() {
+  var path = document.getElementById('path').value;
+
+  httpRequest('POST', 'test value', '/content_manager_json' + path, {}, function() {
+  });
+}
+
