@@ -26,7 +26,12 @@ function httpRequest(httpVerb, data, url, headers, handler) {
 function saveResource() {
   var path = document.getElementById('path').value;
 
-  httpRequest('POST', 'test value', '/content_manager_json' + path, {}, function() {
+  var payload = {
+    content: document.getElementById('content').value
+  };
+
+  httpRequest('POST', JSON.stringify(payload), '/content_manager_json' + path,
+              {}, function() {
   });
 }
 
