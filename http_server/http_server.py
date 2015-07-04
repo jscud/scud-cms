@@ -48,12 +48,25 @@ class ContentJsonManager(webapp2.RequestHandler):
                  resource.path, resource.content));
 
 
-class MainPage(webapp2.RequestHandler):
+class ResourceRenderer(webapp2.RequestHandler):
     def get(self):
-        self.response.headers['Content-Type'] = 'text/plain'
-        self.response.write('Hello, HTTP')
+        results = Resource.query(Resource.path == self.request.path).fetch(1)
+        if len(results) < 1:
+            # There was no resource with this path so return a 404.
+            self.response.write(
+                    '<html><head><title>Not Found</title></head>' +
+                    '<body>Not Found</body></html>')
+            self.response.headers['Content-Type'] = 'text/html'
+            self.response.status = '404 Not Found'
+        else:
+            resource = results[0]
+            self.response.write(resource.content)
+            self.response.headers['Content-Type'] = \
+                    resource.content_type.encode('ascii', 'ignore')
+            self.response.status = '200 OK'
+
 
 app = webapp2.WSGIApplication([
     ('/content_manager_json.*', ContentJsonManager),
-    ('/.*', MainPage),
+    ('/.*', ResourceRenderer),
 ], debug=True)
