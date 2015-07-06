@@ -50,7 +50,7 @@ class ContentJsonManager(webapp2.RequestHandler):
         resource_data = json.loads(self.request.body)
         resource.content = resource_data['content']
         resource.content_type = resource_data['ctype']
-        resource.include_last_modified = resource_data['incdate'] == True
+        resource.include_last_modified = 'incdate' in resource_data
         resource.modified_time = datetime.datetime.now()
         if 'expires' in resource_data:
             resource.expires_seconds = int(resource_data['expires'])
