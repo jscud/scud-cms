@@ -3,8 +3,8 @@
   <head>
     <script src="/content_manager.js"></script>
   </head>
-  <body>
-    Path: <input id="path" size="70"></input><br>
+  <body onload="loadResource()">
+    Path: <input id="path" size="70" onchange="loadResource()"></input><br>
     Content:<br>
     <textarea id="content" rows="25" cols="80"></textarea><br>
     Content type: <input id="content-type" size="30"></input><br>

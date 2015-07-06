@@ -23,6 +23,43 @@ function httpRequest(httpVerb, data, url, headers, handler) {
   }
 }
 
+function loadResource() {
+  var path = document.getElementById('path').value;
+  if (!path) {
+    path = window.location.pathname.substr('/content_manager'.length);
+  }
+
+  if (path) {
+    document.getElementById('path').value = path;
+    httpRequest('GET', null, '/content_manager_json' + path, {}, function(http) {
+      var resourceJson = JSON.parse(http.responseText);
+      document.getElementById('content').value = resourceJson['content'];
+
+      if (resourceJson.hasOwnProperty('ctype')) {
+        document.getElementById('content-type').value = resourceJson.ctype;
+      } else {
+        document.getElementById('content-type').value = '';
+      }
+
+      if (resourceJson.hasOwnProperty('expires')) {
+        document.getElementById('expires-box').style.display = '';
+        document.getElementById('expires-check').checked = true;
+        document.getElementById('expires').value = resourceJson.expires;
+      } else {
+        document.getElementById('expires-box').style.display = 'none';
+        document.getElementById('expires-check').checked = false;
+        document.getElementById('expires').value = '';
+      }
+
+      if (resourceJson.hasOwnProperty('incdate')) {
+        document.getElementById('date').checked = true;
+      } else {
+        document.getElementById('date').checked = false;
+      }
+    });
+  }
+}
+
 function toggleExpires() {
   if (document.getElementById('expires-check').checked) {
     document.getElementById('expires-box').style.display = '';
