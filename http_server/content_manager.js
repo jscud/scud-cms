@@ -33,7 +33,9 @@ function loadResource() {
     document.getElementById('path').value = path;
     httpRequest('GET', null, '/content_manager_json' + path, {}, function(http) {
       var resourceJson = JSON.parse(http.responseText);
-      document.getElementById('content').value = resourceJson['content'];
+      if (resourceJson.hasOwnProperty('content')) {
+        document.getElementById('content').value = resourceJson['content'];
+      }
 
       if (resourceJson.hasOwnProperty('ctype')) {
         document.getElementById('content-type').value = resourceJson.ctype;

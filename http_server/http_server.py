@@ -29,14 +29,17 @@ class ContentJsonManager(webapp2.RequestHandler):
 
     def get(self):
         resource = self.find_resource()
-        resource_data = {
-            'content': resource.content,
-            'ctype': resource.content_type,
-        }
-        if resource.include_last_modified:
-            resource_data['incdate'] = 'true'
-        if resource.expires_seconds != -1:
-            resource_data['expires'] = resource.expires_seconds
+        if resource is not None:
+            resource_data = {
+                'content': resource.content,
+                'ctype': resource.content_type,
+            }
+            if resource.include_last_modified:
+                resource_data['incdate'] = 'true'
+            if resource.expires_seconds != -1:
+                resource_data['expires'] = resource.expires_seconds
+        else:
+            resource_data = {}
 
         self.response.headers['Content-Type'] = 'application/json'
         self.response.write(json.dumps(resource_data))
