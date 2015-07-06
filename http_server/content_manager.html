@@ -8,5 +8,8 @@
     Content:<br>
     <textarea id="content" rows="25" cols="80"></textarea><br>
     Content type: <input id="content-type" size="30"></input><br>
+    Include modification date? <input type="checkbox" id="date"></input><br>
+    Use expires header? <input type="checkbox" id="expires-check" onchange="toggleExpires()"></input><br>
+    <div id="expires-box" style="display: none">Expires seconds: <input id="expires"></input><br></div>
   </body>
 </html>

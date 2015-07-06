@@ -23,6 +23,14 @@ function httpRequest(httpVerb, data, url, headers, handler) {
   }
 }
 
+function toggleExpires() {
+  if (document.getElementById('expires-check').checked) {
+    document.getElementById('expires-box').style.display = '';
+  } else {
+    document.getElementById('expires-box').style.display = 'none';
+  }
+}
+
 function saveResource() {
   var path = document.getElementById('path').value;
 
@@ -30,6 +38,14 @@ function saveResource() {
     content: document.getElementById('content').value,
     ctype: document.getElementById('content-type').value
   };
+
+  if (document.getElementById('date').checked) {
+    payload['incdate'] = true;
+  }
+
+  if (document.getElementById('expires-check').checked) {
+    payload['expires'] = document.getElementById('expires').value;
+  }
 
   httpRequest('POST', JSON.stringify(payload), '/content_manager_json' + path,
               {}, function() {
