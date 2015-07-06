@@ -89,7 +89,7 @@ class ResourceRenderer(webapp2.RequestHandler):
             if resource.expires_seconds != -1:
                 self.response.headers['Expires'] = (datetime.datetime.now() +
                         datetime.timedelta(
-                                0, resource.expires_seconds)).strftime(
+                                seconds=resource.expires_seconds)).strftime(
                                         '%a, %d %b %Y %H:%M:%S GMT')
 
 
