@@ -7,16 +7,20 @@ handlers:
 - url: /content_manager.js
   static_files: content_manager.js
   upload: content_manager.js
+  login: admin
 
 - url: /content_manager_json.*
   script: http_server.app
+  login: admin
 
 - url: /content_manager.*
   static_files: content_manager.html
   upload: content_manager.html
+  login: admin
 
 - url: /content_lister.*
   script: http_server.app
+  login: admin
 
 - url: /.*
   script: http_server.app
