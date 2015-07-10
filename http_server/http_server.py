@@ -84,6 +84,36 @@ class ContentJsonManager(webapp2.RequestHandler):
         self.response.write('saved resource %s' % (resource.path,))
 
 
+class ContentLister(webapp2.RequestHandler):
+    def get(self):
+        """Lists a few resources with pagination."""
+        resources = []
+        starting_path = self.request.get('start')
+        if starting_path:
+            resources = Resource.query(Resource.path >= starting_path).order(
+                    Resource.path).fetch(11)
+        else:
+            resources = Resource.query().order(Resource.path).fetch(11)
+
+        self.response.headers['Content-Type'] = 'text/html'
+
+        self.response.write('<!doctype><html><head>' +
+                '<title>Content Lister</title></head><body>Resources:<br>')
+        for i in xrange(10):
+            if i < len(resources):
+                self.response.write('%s ' % (resources[i].path,) +
+                        '<a href="/content_manager%s">' % (
+                                resources[i].path,) +
+                        'Edit</a> <a href="%s">View</a><br>' % (
+                                resources[i].path,))
+
+        if len(resources) > 10:
+            self.response.write(
+                    '<a href="/content_lister?start=%s">Next</a>' % (
+                            resources[10].path,))
+        
+        self.response.write('</body></html>')
+
 class ResourceRenderer(webapp2.RequestHandler):
     def get(self):
         results = Resource.query(Resource.path == self.request.path).fetch(1)
@@ -120,5 +150,6 @@ class ResourceRenderer(webapp2.RequestHandler):
 
 app = webapp2.WSGIApplication([
     ('/content_manager_json.*', ContentJsonManager),
+    ('/content_lister.*', ContentLister),
     ('/.*', ResourceRenderer),
 ], debug=True)

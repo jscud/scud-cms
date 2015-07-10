@@ -15,5 +15,8 @@ handlers:
   static_files: content_manager.html
   upload: content_manager.html
 
+- url: /content_lister.*
+  script: http_server.app
+
 - url: /.*
   script: http_server.app
