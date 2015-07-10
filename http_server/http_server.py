@@ -81,8 +81,7 @@ class ContentJsonManager(webapp2.RequestHandler):
         resource.put()
 
         self.response.headers['Content-Type'] = 'application/json'
-        self.response.write('creating resource %s with contents %s, include last modified? %i' % (
-                 resource.path, resource.content, resource.include_last_modified));
+        self.response.write('saved resource %s' % (resource.path,))
 
 
 class ResourceRenderer(webapp2.RequestHandler):
