@@ -101,6 +101,8 @@ class ContentLister(webapp2.RequestHandler):
                 '<title>Content Lister</title></head><body>Resources:<br>')
         for i in xrange(10):
             if i < len(resources):
+                # TODO: constructing the path this way makes the resource
+                # path a possible vector for XSS.
                 self.response.write('%s ' % (resources[i].path,) +
                         '<a href="/content_manager%s">' % (
                                 resources[i].path,) +
