@@ -5,6 +5,12 @@ from google.appengine.ext import ndb
 import webapp2
 
 
+class Header(ndb.Model):
+    """Contains a single HTTP header for a resource."""
+    name = ndb.StringProperty()
+    value = ndb.StringProperty()
+
+
 class Resource(ndb.Model):
     """Contents of a single URL."""
     path = ndb.StringProperty()
@@ -13,6 +19,7 @@ class Resource(ndb.Model):
     include_last_modified = ndb.BooleanProperty()
     modified_time = ndb.DateTimeProperty()
     expires_seconds = ndb.IntegerProperty()
+    headers = ndb.StructuredProperty(Header, repeated=True)
 
 
 class ContentJsonManager(webapp2.RequestHandler):
@@ -33,11 +40,15 @@ class ContentJsonManager(webapp2.RequestHandler):
             resource_data = {
                 'content': resource.content,
                 'ctype': resource.content_type,
+                'headers': [],
             }
             if resource.include_last_modified:
                 resource_data['incdate'] = 'true'
             if resource.expires_seconds != -1:
                 resource_data['expires'] = resource.expires_seconds
+            for header in resource.headers:
+                resource_data['headers'].append('%s:%s' % (
+                        header.name, header.value))
         else:
             resource_data = {}
 
@@ -59,6 +70,13 @@ class ContentJsonManager(webapp2.RequestHandler):
             resource.expires_seconds = int(resource_data['expires'])
         else:
             resource.expires_seconds = -1
+
+        resource.headers = []
+        for header_name_value in resource_data['headers']:
+            # Headers are sent from the client JS in the form name:value.
+            resource.headers.append(Header(
+                    name=header_name_value[:header_name_value.index(':')],
+                    value=header_name_value[header_name_value.index(':') + 1:]))
 
         resource.put()
 
@@ -94,6 +112,11 @@ class ResourceRenderer(webapp2.RequestHandler):
                         datetime.timedelta(
                                 seconds=resource.expires_seconds)).strftime(
                                         '%a, %d %b %Y %H:%M:%S GMT')
+
+            for header in resource.headers:
+                self.response.headers[
+                        header.name.encode('ascii', 'ignore')] = \
+                                header.value.encode('ascii', 'ignore')
 
 
 app = webapp2.WSGIApplication([

@@ -58,6 +58,22 @@ function loadResource() {
       } else {
         document.getElementById('date').checked = false;
       }
+
+      var headersContainer = document.getElementById('headers');
+      headersContainer.innerHTML = '';
+      var newHeaderDiv, newInput, header, seperatorIndex;
+      for (var i = 0; i < resourceJson['headers'].length; i++) {
+        newHeaderDiv = document.createElement('div');
+        newInput = document.createElement('input');
+        header = resourceJson['headers'][i];
+        seperatorIndex = header.indexOf(':');
+        newInput.value = header.substr(0, seperatorIndex);
+        newHeaderDiv.appendChild(newInput);
+        newInput = document.createElement('input');
+        newInput.value = header.substr(seperatorIndex + 1);
+        newHeaderDiv.appendChild(newInput);
+        headersContainer.appendChild(newHeaderDiv);
+      }
     });
   }
 }
@@ -68,6 +84,16 @@ function toggleExpires() {
   } else {
     document.getElementById('expires-box').style.display = 'none';
   }
+}
+
+function addHeader() {
+  var container = document.getElementById('headers');
+
+  var newHeaderDiv = document.createElement('div');
+  newHeaderDiv.appendChild(document.createElement('input'));
+  newHeaderDiv.appendChild(document.createElement('input'));
+ 
+  container.appendChild(newHeaderDiv); 
 }
 
 function saveResource() {
@@ -85,6 +111,18 @@ function saveResource() {
   if (document.getElementById('expires-check').checked) {
     payload['expires'] = document.getElementById('expires').value;
   }
+
+  var headerContainer = document.getElementById('headers');
+  payload['headers'] = [];
+  for (var headerDiv = headerContainer.firstChild; headerDiv;
+       headerDiv = headerDiv.nextSibling) {
+    var key = headerDiv.firstChild.value;
+    var value = headerDiv.lastChild.value;
+    if (key.length > 0) {
+      payload['headers'].push(key + ':' + value);
+    }
+  }
+
 
   httpRequest('POST', JSON.stringify(payload), '/content_manager_json' + path,
               {}, function() {

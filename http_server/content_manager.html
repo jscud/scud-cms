@@ -11,6 +11,8 @@
     Include modification date? <input type="checkbox" id="date"></input><br>
     Use expires header? <input type="checkbox" id="expires-check" onchange="toggleExpires()"></input><br>
     <div id="expires-box" style="display: none">Expires seconds: <input id="expires"></input><br></div>
+    <button onclick="addHeader()">Add Headers</button><br>
+    <div id="headers"></div>
     <button onclick="saveResource()">Save</button>
   </body>
 </html>
