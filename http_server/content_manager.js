@@ -23,6 +23,13 @@ function httpRequest(httpVerb, data, url, headers, handler) {
   }
 }
 
+// Displays a message at the bottom of the content_manager page.
+function setState(message) {
+  var stateDiv = document.getElementById('state');
+  stateDiv.innerHTML = '';
+  stateDiv.appendChild(document.createTextNode(message));
+}
+
 function loadResource() {
   var path = document.getElementById('path').value;
   if (!path) {
@@ -32,6 +39,8 @@ function loadResource() {
   if (path) {
     document.getElementById('path').value = path;
     httpRequest('GET', null, '/content_manager_json' + path, {}, function(http) {
+      setState('Loaded resource: ' + http.responseText);
+
       var resourceJson = JSON.parse(http.responseText);
       if (resourceJson.hasOwnProperty('content')) {
         document.getElementById('content').value = resourceJson['content'];
@@ -98,6 +107,12 @@ function addHeader() {
 
 function saveResource() {
   var path = document.getElementById('path').value;
+  if (!path) {
+    setState('Missing required path.');
+    return;
+  } else {
+    setState('');
+  }
 
   var payload = {
     content: document.getElementById('content').value,
@@ -123,9 +138,9 @@ function saveResource() {
     }
   }
 
-
   httpRequest('POST', JSON.stringify(payload), '/content_manager_json' + path,
               {}, function() {
+    setState('Saved resource ' + JSON.stringify(payload));
   });
 }
 
