@@ -1,5 +1,30 @@
+# This script generates an app.yaml file which configures a static site
+# served by Google App Engine.
+#
+# To generate the configuration file for the static site, run this script
+# with the name of the directory containing the website contents as the
+# first argument. The website directory must contain an index.html file
+# which will be served as the root file at the website (visting the domain
+# with a path of /).
+#
+# Example:
+# python generate_app_yaml.py example_site
+#
+# This will create an app.yaml file in the example_site directory.
+#
+# To deploy the application to Google App Engine, you can then run the
+# gcloud command to upload the app, pointing to the app.yaml file that
+# this script created.
+#
+# Example
+# gcloud app deploy example_site/app.yaml --project=<your-project-id>
+#
+# After deploying, you will be able to see your website at 
+# <your-project-id>.appspot.com
+
 import os
 import sys
+
 
 APP_YAML_PREAMBLE = '''runtime: python27
 api_version: 1
