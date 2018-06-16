@@ -42,6 +42,12 @@ STATIC_FILE_TEMPLATE = '''
   upload: %s
 '''
 
+STATIC_DIRECTORY_TEMPLATE = '''
+- url: /%s
+  static_dir: %s
+'''
+  
+
 
 def write_app_yaml(files, directories):
   new_app_yaml = open('%s/app.yaml' % sys.argv[1], 'w')
@@ -51,10 +57,14 @@ def write_app_yaml(files, directories):
       escaped_name = name.replace('.', '\\.')
       new_app_yaml.write(
               STATIC_FILE_TEMPLATE % (escaped_name, name, escaped_name))
-      print('Added file %s/%s' % (sys.argv[1], name))
+      print('Added file      %s/%s' % (sys.argv[1], name))
+
+  for name in directories:
+      new_app_yaml.write(STATIC_DIRECTORY_TEMPLATE % (name, name))
+      print('Added directory %s/%s' % (sys.argv[1], name))
 
   new_app_yaml.close()
-  print('Generated %s/app.yaml' % sys.argv[1])
+  print('Generated       %s/app.yaml' % sys.argv[1])
 
 
 def main():
@@ -69,9 +79,9 @@ def main():
     filenames = os.listdir(sys.argv[1])
     for filename in filenames:
         if filename == 'index.html':
-            print('Found %s/index.html' % sys.argv[1])
+            print('Found root page %s/index.html' % sys.argv[1])
             found_index_html = True
-        elif os.path.isdir(filename):
+        elif os.path.isdir('%s/%s' % (sys.argv[1], filename)):
             directories.append(filename)
         elif filename != 'app.yaml':
             files.append(filename)
@@ -79,7 +89,7 @@ def main():
     if found_index_html:
         write_app_yaml(files, directories)
         print('\nYou can now deploy using:')
-        print('gcloud app deploy %s/app.yaml --project=<x>' % sys.argv[1])
+        print('gcloud app deploy %s/app.yaml --project=<x>\n' % sys.argv[1])
         return 0
     else:
         print('The directory %s must contain an index.html file.' % (
