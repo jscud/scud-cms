@@ -87,6 +87,8 @@ def main():
 
     if found_index_html:
         write_app_yaml(files, directories)
+        print('\nPreview your site using:')
+        print('dev_appserver.py %s/app.yaml' % sys.argv[1])
         print('\nYou can now deploy using:')
         print('gcloud app deploy %s/app.yaml --project=<x>\n' % sys.argv[1])
         return 0
