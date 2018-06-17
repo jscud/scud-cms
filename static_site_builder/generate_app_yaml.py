@@ -19,7 +19,7 @@
 # Example
 # gcloud app deploy example_site/app.yaml --project=<your-project-id>
 #
-# After deploying, you will be able to see your website at 
+# After deploying, you will be able to see your website at
 # <your-project-id>.appspot.com
 
 import os
@@ -46,7 +46,6 @@ STATIC_DIRECTORY_TEMPLATE = '''
 - url: /%s
   static_dir: %s
 '''
-  
 
 
 def write_app_yaml(files, directories):
